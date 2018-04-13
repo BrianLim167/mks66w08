@@ -11,6 +11,10 @@ def is_number(s):
 
 class PPMGrid(object):
 
+    ############################################################################
+    # original sauce
+    ############################################################################
+
     #constants
     XRES = 500
     YRES = 500
@@ -83,6 +87,10 @@ class PPMGrid(object):
         p.communicate()
         remove(ppm_name)
 
+    ############################################################################
+    # line
+    ############################################################################
+
     def draw_line( self, x0, y0, x1, y1, color ):
         if ( x1 < x0 ):
             (x0, x1) = (x1, x0)
@@ -131,16 +139,32 @@ class PPMGrid(object):
                 d -= 2*b
             return
 
+    ############################################################################
+    # matrix
+    ############################################################################
+
     def draw_lines( self, matrix, color ):
         for c in range(matrix.cols//2):
             self.draw_line( *matrix[c*2][:2], *matrix[c*2+1][:2], color )
 
-    def draw_polygons( self, matrix, color):
+    ############################################################################
+    # matrix
+    ############################################################################
+
+    def draw_polygons( self, matrix, color, backface_culling=True ):
+        if ( backface_culling ):
+            matrix = matrix.backface_cull()
         for c in range(matrix.cols//3):
             self.draw_line( *matrix[c*3][:2], *matrix[c*3+1][:2], color )
             self.draw_line( *matrix[c*3+1][:2], *matrix[c*3+2][:2], color )
             self.draw_line( *matrix[c*3+2][:2], *matrix[c*3][:2], color )
 
+
+    ############################################################################
+    # transform
+    # curves
+    # 3d
+    ############################################################################
     def parse_file( self, fname, color ):
         fopen = open(fname,'r')
         fread = fopen.read()
@@ -197,8 +221,8 @@ class PPMGrid(object):
             elif ( cmd[i] == "box" ):
                 p.add_box(*args)
             elif ( cmd[i] == "sphere" ):
-                e.add_sphere(*args)
+                p.add_sphere(*args)
             elif ( cmd[i] == "torus" ):
-                e.add_torus(*args)
+                p.add_torus(*args)
         
 
