@@ -11,10 +11,6 @@ def is_number(s):
 
 class PPMGrid(object):
 
-    ############################################################################
-    # original sauce
-    ############################################################################
-
     #constants
     XRES = 500
     YRES = 500
@@ -87,10 +83,6 @@ class PPMGrid(object):
         p.communicate()
         remove(ppm_name)
 
-    ############################################################################
-    # line
-    ############################################################################
-
     def draw_line( self, x0, y0, x1, y1, color ):
         if ( x1 < x0 ):
             (x0, x1) = (x1, x0)
@@ -138,18 +130,10 @@ class PPMGrid(object):
                 y -= 1
                 d -= 2*b
             return
-
-    ############################################################################
-    # matrix
-    ############################################################################
-
+        
     def draw_lines( self, matrix, color ):
         for c in range(matrix.cols//2):
             self.draw_line( *matrix[c*2][:2], *matrix[c*2+1][:2], color )
-
-    ############################################################################
-    # matrix
-    ############################################################################
 
     def draw_polygons( self, matrix, color, backface_culling=True ):
         if ( backface_culling ):
@@ -159,43 +143,47 @@ class PPMGrid(object):
             self.draw_line( *matrix[c*3+1][:2], *matrix[c*3+2][:2], color )
             self.draw_line( *matrix[c*3+2][:2], *matrix[c*3][:2], color )
 
-
-    ############################################################################
-    # transform
-    # curves
-    # 3d
-    ############################################################################
     def parse_file( self, fname, color ):
         fopen = open(fname,'r')
         fread = fopen.read()
         fopen.close()
 
         t = Matrix.ident()
-        e = Matrix(0,4)
-        p = Matrix(0,4)
+
+        coordinate_system = [Matrix.ident()]
 
         cmd = fread.split('\n')
         for i in range(len(cmd)):
+            e = Matrix(0,4)
+            p = Matrix(0,4)
+            
             if ( i != len(cmd)-1 ):
                 args = cmd[i+1].split()
                 for j in range(len(args)):
                     if ( is_number(args[j]) ):
                         args[j] = float(args[j])
+            
             if ( cmd[i] == "line" ):
                 e.add_edge(*args)
+                self.draw_lines(e*coordinate_system[-1], color)
             elif ( cmd[i] == "ident" ):
                 t = Matrix.ident()
             elif ( cmd[i] == "scale" ):
-                t *= Matrix.scaler(*args)
+##                t *= Matrix.scaler(*args)
+                coordinate_system[-1] = coordinate_system[-1] * Matrix.scaler(*args)
             elif ( cmd[i] == "move" ):
-                t *= Matrix.mover(*args)
+##                t *= Matrix.mover(*args)
+                coordinate_system[-1] = coordinate_system[-1] * Matrix.mover(*args)
             elif ( cmd[i] == "rotate" ):
                 if ( args[0] == 'x' ):
-                    t *= Matrix.rotx(args[1])
+##                    t *= Matrix.rotx(args[1])
+                    coordinate_system[-1] = coordinate_system[-1] * Matrix.rotx(args[1])
                 elif ( args[0] == 'y' ):
-                    t *= Matrix.roty(args[1])
+##                    t *= Matrix.roty(args[1])
+                    coordinate_system[-1] = coordinate_system[-1] * Matrix.roty(args[1])
                 elif ( args[0] == 'z' ):
-                    t *= Matrix.rotz(args[1])
+##                    t *= Matrix.rotz(args[1])
+                    coordinate_system[-1] = coordinate_system[-1] * Matrix.roty(args[1])
             elif ( cmd[i] == "apply" ):
                 e *= t
                 p *= t
@@ -203,26 +191,37 @@ class PPMGrid(object):
                 e = Matrix(0,4)
                 p = Matrix(0,4)
             elif ( cmd[i] == "display" ):
-                self.clear()
-                self.draw_lines(e, color)
-                self.draw_polygons(p, color)
+##                self.clear()
+##                self.draw_lines(e, color)
+##                self.draw_polygons(p, color)
                 self.display()
-            elif ( cmd[i] == "save" ):
                 self.clear()
-                self.draw_lines(e, color)
-                self.draw_polygons(p, color)
+            elif ( cmd[i] == "save" ):
+##                self.clear()
+##                self.draw_lines(e, color)
+##                self.draw_polygons(p, color)
                 self.save_extension(args[0])
+                self.clear()
             elif ( cmd[i] == "quit" ):
                 return
             elif ( cmd[i] == "circle" ):
                 e.add_circle(*args)
+                self.draw_lines(e*coordinate_system[-1], color)
             elif ( cmd[i] == "bezier" or cmd[i] == "hermite" ):
                 e.add_curve(*args,0.001,cmd[i])
+                self.draw_lines(e*coordinate_system[-1], color)
             elif ( cmd[i] == "box" ):
                 p.add_box(*args)
+                self.draw_polygons(p*coordinate_system[-1], color)
             elif ( cmd[i] == "sphere" ):
                 p.add_sphere(*args)
+                self.draw_polygons(p*coordinate_system[-1], color)
             elif ( cmd[i] == "torus" ):
                 p.add_torus(*args)
+                self.draw_polygons(p*coordinate_system[-1], color)
+            elif ( cmd[i] == "push" ):
+                coordinate_system.append(coordinate_system[-1].copy())
+            elif ( cmd[i] == "pop" ):
+                coordinate_system.pop()
         
 
