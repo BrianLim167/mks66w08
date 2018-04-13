@@ -165,7 +165,7 @@ class PPMGrid(object):
             
             if ( cmd[i] == "line" ):
                 e.add_edge(*args)
-                self.draw_lines(e*coordinate_system[-1], color)
+                self.draw_lines(coordinate_system[-1]*e, color)
             elif ( cmd[i] == "ident" ):
                 t = Matrix.ident()
             elif ( cmd[i] == "scale" ):
@@ -206,19 +206,19 @@ class PPMGrid(object):
                 return
             elif ( cmd[i] == "circle" ):
                 e.add_circle(*args)
-                self.draw_lines(e*coordinate_system[-1], color)
+                self.draw_lines(coordinate_system[-1]*e, color)
             elif ( cmd[i] == "bezier" or cmd[i] == "hermite" ):
                 e.add_curve(*args,0.001,cmd[i])
-                self.draw_lines(e*coordinate_system[-1], color)
+                self.draw_lines(coordinate_system[-1]*e, color)
             elif ( cmd[i] == "box" ):
                 p.add_box(*args)
-                self.draw_polygons(p*coordinate_system[-1], color)
+                self.draw_polygons(coordinate_system[-1]*p, color)
             elif ( cmd[i] == "sphere" ):
                 p.add_sphere(*args)
-                self.draw_polygons(p*coordinate_system[-1], color)
+                self.draw_polygons(coordinate_system[-1]*p, color)
             elif ( cmd[i] == "torus" ):
                 p.add_torus(*args)
-                self.draw_polygons(p*coordinate_system[-1], color)
+                self.draw_polygons(coordinate_system[-1]*p, color)
             elif ( cmd[i] == "push" ):
                 coordinate_system.append(coordinate_system[-1].copy())
             elif ( cmd[i] == "pop" ):
