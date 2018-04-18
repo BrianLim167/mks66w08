@@ -190,18 +190,19 @@ class PPMGrid(object):
             elif ( cmd[i] == "clear" ):
                 e = Matrix(0,4)
                 p = Matrix(0,4)
+                self.clear()
             elif ( cmd[i] == "display" ):
 ##                self.clear()
 ##                self.draw_lines(e, color)
 ##                self.draw_polygons(p, color)
                 self.display()
-                self.clear()
+##                self.clear()
             elif ( cmd[i] == "save" ):
 ##                self.clear()
 ##                self.draw_lines(e, color)
 ##                self.draw_polygons(p, color)
                 self.save_extension(args[0])
-                self.clear()
+##                self.clear()
             elif ( cmd[i] == "quit" ):
                 return
             elif ( cmd[i] == "circle" ):
